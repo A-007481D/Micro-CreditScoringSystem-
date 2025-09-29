@@ -20,7 +20,7 @@ public class InputScanner {
         }
         return instance;
     }
-
+    // TODO implement validation dyal input;
     public String readString(String prompt){
         System.out.println(prompt);
         return scanner.nextLine().trim();
