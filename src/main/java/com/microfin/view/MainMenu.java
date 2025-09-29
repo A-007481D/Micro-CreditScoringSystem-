@@ -10,10 +10,10 @@ public class MainMenu {
         while(true) {
             System.out.println("\n###----------- ANCHOR-MFI Console -----------###");
             System.out.println("1. Gestion des clients\n");
-            System.out.println("2. Gestion des Credits & Calcul de Score\n");
-            System.out.println("3. Gestion de l’Historique de Paiements\n");
-            System.out.println("4. Moteur de Décision Automatique\n");
-            System.out.println("5. Analytics & Recherche Avancée\n");
+            System.out.println("2. Gestion des Credits\n");
+            System.out.println("3. Gestion des Paiements\n");
+            System.out.println("5. Analytics & Rapports\n");
+            System.out.println("6. Historique & Audit\n");
             System.out.println("0. Quitter\n");
             System.out.println("Choix :");
             String choice = sc.nextLine();
