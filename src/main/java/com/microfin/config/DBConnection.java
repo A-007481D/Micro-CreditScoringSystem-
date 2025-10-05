@@ -86,26 +86,20 @@ public class DBConnection {
 
     private void initializeDatabase() {
         String[] initScripts = {
-            // Personne table
-            "CREATE TABLE IF NOT EXISTS personne (" +
+            // Employes table - flat structure with all Personne fields
+            "CREATE TABLE IF NOT EXISTS employes (" +
                 "id SERIAL PRIMARY KEY, " +
-                "type VARCHAR(50) NOT NULL, " +
                 "nom VARCHAR(100) NOT NULL, " +
                 "prenom VARCHAR(100) NOT NULL, " +
                 "date_naissance DATE NOT NULL, " +
                 "ville VARCHAR(100), " +
                 "nombre_enfants INT DEFAULT 0, " +
-                "investissements DOUBLE PRECISION DEFAULT 0, " +
+                "investissement DOUBLE PRECISION DEFAULT 0, " +
+                "placement DOUBLE PRECISION DEFAULT 0, " +
                 "situation_familiale VARCHAR(50), " +
-                "date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                "created_at DATE DEFAULT CURRENT_DATE, " +
                 "score INT DEFAULT 0, " +
-                "existant BOOLEAN DEFAULT true" +
-            ");",
-            
-            // Employes table
-            "CREATE TABLE IF NOT EXISTS employes (" +
-                "id SERIAL PRIMARY KEY, " +
-                "personne_id INT REFERENCES personnes(id), " +
+                "client_existant BOOLEAN DEFAULT false, " +
                 "salaire DOUBLE PRECISION NOT NULL, " +
                 "anciennete INT NOT NULL, " +
                 "poste VARCHAR(100), " +
@@ -113,14 +107,24 @@ public class DBConnection {
                 "secteur VARCHAR(50)" +
             ");",
             
-            // Professionnels table
+            // Professionnels table - flat structure with all Personne fields
             "CREATE TABLE IF NOT EXISTS professionnels (" +
                 "id SERIAL PRIMARY KEY, " +
-                "personne_id INT REFERENCES personnes(id), " +
-                "revenu_annuel DOUBLE PRECISION NOT NULL, " +
+                "nom VARCHAR(100) NOT NULL, " +
+                "prenom VARCHAR(100) NOT NULL, " +
+                "date_naissance DATE NOT NULL, " +
+                "ville VARCHAR(100), " +
+                "nombre_enfants INT DEFAULT 0, " +
+                "investissement DOUBLE PRECISION DEFAULT 0, " +
+                "placement DOUBLE PRECISION DEFAULT 0, " +
+                "situation_familiale VARCHAR(50), " +
+                "created_at DATE DEFAULT CURRENT_DATE, " +
+                "score INT DEFAULT 0, " +
+                "client_existant BOOLEAN DEFAULT false, " +
+                "revenu DOUBLE PRECISION NOT NULL, " +
                 "immatriculation_fiscale VARCHAR(100), " +
                 "secteur_activite VARCHAR(50), " +
-                "activite_specifique VARCHAR(200)" +
+                "activite VARCHAR(200)" +
             ");",
             
             // Credits table
