@@ -4,6 +4,7 @@ import com.microfin.enums.Secteur;
 import com.microfin.enums.SituationFamiliale;
 import com.microfin.enums.TypeContrat;
 import com.microfin.model.Employe;
+import com.microfin.model.Incident;
 import com.microfin.model.Personne;
 import com.microfin.repository.CreditRepository;
 import com.microfin.repository.IncidentRepository;
@@ -43,7 +44,7 @@ public class AnalyticsService {
         return clientService.listerTousLesClients().stream()
             .filter(p -> p.getScore() < 60)
             .filter(p -> {
-                var incidents = incidentRepository.findRecentByClientId(p.getId(), 6);
+                List<Incident> incidents = incidentRepository.findRecentByClientId(p.getId(), 6);
                 return !incidents.isEmpty();
             })
             .sorted(Comparator.comparingInt(Personne::getScore).reversed())

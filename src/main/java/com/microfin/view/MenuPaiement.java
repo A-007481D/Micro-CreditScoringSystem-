@@ -40,13 +40,27 @@ public class MenuPaiement {
             int choix = lireEntier();
             
             switch (choix) {
-                case 1 -> enregistrerPaiement();
-                case 2 -> voirEcheancesEnRetard();
-                case 3 -> voirEcheancesImpayees();
-                case 4 -> consulterHistorique();
-                case 5 -> voirIncidentsRecents();
-                case 0 -> continuer = false;
-                default -> System.out.println("✗ Choix invalide!");
+                case 1:
+                    enregistrerPaiement();
+                    break;
+                case 2:
+                    voirEcheancesEnRetard();
+                    break;
+                case 3:
+                    voirEcheancesImpayees();
+                    break;
+                case 4:
+                    consulterHistorique();
+                    break;
+                case 5:
+                    voirIncidentsRecents();
+                    break;
+                case 0:
+                    continuer = false;
+                    break;
+                default:
+                    System.out.println("✗ Choix invalide!");
+                    break;
             }
         }
     }

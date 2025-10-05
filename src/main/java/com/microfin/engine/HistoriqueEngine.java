@@ -52,13 +52,20 @@ public class HistoriqueEngine {
     }
 
     public TypeIncident determinerTypeIncident(StatutPaiement statut) {
-        return switch (statut) {
-            case PAYE_A_TEMPS -> TypeIncident.PAYE_A_TEMPS;
-            case EN_RETARD -> TypeIncident.EN_RETARD;
-            case PAYE_EN_RETARD -> TypeIncident.PAYE_EN_RETARD;
-            case IMPAYE_NON_REGLE -> TypeIncident.IMPAYE_NON_REGLE;
-            case IMPAYE_REGLE -> TypeIncident.IMPAYE_REGLE;
-        };
+        switch (statut) {
+            case PAYE_A_TEMPS:
+                return TypeIncident.PAYE_A_TEMPS;
+            case EN_RETARD:
+                return TypeIncident.EN_RETARD;
+            case PAYE_EN_RETARD:
+                return TypeIncident.PAYE_EN_RETARD;
+            case IMPAYE_NON_REGLE:
+                return TypeIncident.IMPAYE_NON_REGLE;
+            case IMPAYE_REGLE:
+                return TypeIncident.IMPAYE_REGLE;
+            default:
+                return TypeIncident.PAYE_A_TEMPS;
+        }
     }
 
     public Incident creerIncident(Echeance echeance, Long clientId) {

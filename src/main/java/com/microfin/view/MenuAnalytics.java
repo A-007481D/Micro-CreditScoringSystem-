@@ -38,16 +38,36 @@ public class MenuAnalytics {
             int choix = lireEntier();
             
             switch (choix) {
-                case 1 -> clientsEligiblesImmobilier();
-                case 2 -> clientsARisque();
-                case 3 -> trierParScore();
-                case 4 -> trierParRevenus();
-                case 5 -> trierParAnciennete();
-                case 6 -> repartitionParTypeEmploi();
-                case 7 -> selectionCampagne();
-                case 8 -> recherchePersonnalisee();
-                case 0 -> continuer = false;
-                default -> System.out.println("✗ Choix invalide!");
+                case 1:
+                    clientsEligiblesImmobilier();
+                    break;
+                case 2:
+                    clientsARisque();
+                    break;
+                case 3:
+                    trierParScore();
+                    break;
+                case 4:
+                    trierParRevenus();
+                    break;
+                case 5:
+                    trierParAnciennete();
+                    break;
+                case 6:
+                    repartitionParTypeEmploi();
+                    break;
+                case 7:
+                    selectionCampagne();
+                    break;
+                case 8:
+                    recherchePersonnalisee();
+                    break;
+                case 0:
+                    continuer = false;
+                    break;
+                default:
+                    System.out.println("✗ Choix invalide!");
+                    break;
             }
         }
     }

@@ -42,13 +42,27 @@ public class MenuCredit {
             int choix = lireEntier();
             
             switch (choix) {
-                case 1 -> demanderCredit();
-                case 2 -> consulterCredit();
-                case 3 -> listerCreditsClient();
-                case 4 -> voirEcheances();
-                case 5 -> cloturerCredit();
-                case 0 -> continuer = false;
-                default -> System.out.println("✗ Choix invalide!");
+                case 1:
+                    demanderCredit();
+                    break;
+                case 2:
+                    consulterCredit();
+                    break;
+                case 3:
+                    listerCreditsClient();
+                    break;
+                case 4:
+                    voirEcheances();
+                    break;
+                case 5:
+                    cloturerCredit();
+                    break;
+                case 0:
+                    continuer = false;
+                    break;
+                default:
+                    System.out.println("✗ Choix invalide!");
+                    break;
             }
         }
     }
@@ -177,15 +191,22 @@ public class MenuCredit {
 
     private TypeCredit choisirTypeCredit() {
         int choix = lireEntier();
-        return switch (choix) {
-            case 1 -> TypeCredit.IMMOBILIER;
-            case 2 -> TypeCredit.CONSOMMATION;
-            case 3 -> TypeCredit.PERSONNEL;
-            case 4 -> TypeCredit.AUTO;
-            case 5 -> TypeCredit.EQUIPEMENT;
-            case 6 -> TypeCredit.PROFESSIONNEL;
-            default -> TypeCredit.PERSONNEL;
-        };
+        switch (choix) {
+            case 1:
+                return TypeCredit.IMMOBILIER;
+            case 2:
+                return TypeCredit.CONSOMMATION;
+            case 3:
+                return TypeCredit.PERSONNEL;
+            case 4:
+                return TypeCredit.AUTO;
+            case 5:
+                return TypeCredit.EQUIPEMENT;
+            case 6:
+                return TypeCredit.PROFESSIONNEL;
+            default:
+                return TypeCredit.PERSONNEL;
+        }
     }
 
     private int lireEntier() {

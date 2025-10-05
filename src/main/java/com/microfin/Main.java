@@ -8,15 +8,24 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("╔════════════════════════════════════════════════════════════════╗");
         System.out.println("║   SYSTÈME DE SCORING CRÉDIT - MICROFINANCE MAROC              ║");
-        System.out.println("║   Version 1.0                                                  ║");
+        System.out.println("║   Version 1.0 (Java 8)                                         ║");
         System.out.println("╚════════════════════════════════════════════════════════════════╝");
         System.out.println();
         
-        DBConnection.getInstance();
-        
-        MenuPrincipal menuPrincipal = new MenuPrincipal();
-        menuPrincipal.afficher();
-        
-        DBConnection.getInstance().closeConnection();
+        try {
+            // Initialize database connection
+            DBConnection dbConnection = DBConnection.getInstance();
+            
+            // Start the application
+            MenuPrincipal menuPrincipal = new MenuPrincipal();
+            menuPrincipal.afficher();
+            
+            // Close the connection when done
+            dbConnection.closeConnection();
+        } catch (Exception e) {
+            System.err.println("Une erreur critique est survenue: " + e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 }

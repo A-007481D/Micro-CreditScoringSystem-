@@ -12,16 +12,14 @@ import java.util.Optional;
 
 public class CreditRepository {
     
-    private Connection getConnection() {
+    private Connection getConnection() throws SQLException {
         return DBConnection.getInstance().getConnection();
     }
 
     public Credit save(Credit credit, String clientType) {
-        String sql = """
-            INSERT INTO credits (client_id, client_type, montant_demande, montant_octroye,
-                taux_interet, duree_mois, type_credit, decision, score_au_moment, actif)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """;
+        String sql = "INSERT INTO credits (client_id, client_type, montant_demande, montant_octroye, " +
+                "taux_interet, duree_mois, type_credit, decision, score_au_moment, actif) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         try (PreparedStatement stmt = getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setLong(1, credit.getClientId());
@@ -120,11 +118,8 @@ public class CreditRepository {
     }
 
     public boolean update(Credit credit) {
-        String sql = """
-            UPDATE credits SET montant_demande = ?, montant_octroye = ?, taux_interet = ?,
-                duree_mois = ?, type_credit = ?, decision = ?, actif = ?
-            WHERE id = ?
-        """;
+        String sql = "UPDATE credits SET montant_demande = ?, montant_octroye = ?, taux_interet = ?, " +
+                "duree_mois = ?, type_credit = ?, decision = ?, actif = ? WHERE id = ?";
         
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setDouble(1, credit.getMontantDemande());

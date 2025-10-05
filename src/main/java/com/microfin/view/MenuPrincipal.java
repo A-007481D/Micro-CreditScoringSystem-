@@ -13,7 +13,6 @@ public class MenuPrincipal {
     private final PaiementService paiementService;
     private final AnalyticsService analyticsService;
     
-    private final MenuClient menuClient;
     private final MenuCredit menuCredit;
     private final MenuPaiement menuPaiement;
     private final MenuAnalytics menuAnalytics;
@@ -25,7 +24,6 @@ public class MenuPrincipal {
         this.paiementService = new PaiementService();
         this.analyticsService = new AnalyticsService();
         
-        this.menuClient = new MenuClient(scanner, clientService);
         this.menuCredit = new MenuCredit(scanner, creditService, clientService);
         this.menuPaiement = new MenuPaiement(scanner, paiementService, creditService);
         this.menuAnalytics = new MenuAnalytics(scanner, analyticsService);
@@ -47,15 +45,25 @@ public class MenuPrincipal {
             int choix = lireEntier();
             
             switch (choix) {
-                case 1 -> menuClient.afficher();
-                case 2 -> menuCredit.afficher();
-                case 3 -> menuPaiement.afficher();
-                case 4 -> menuAnalytics.afficher();
-                case 0 -> {
+                case 1:
+                    System.out.println("Menu clients - À implémenter");
+                    break;
+                case 2:
+                    menuCredit.afficher();
+                    break;
+                case 3:
+                    menuPaiement.afficher();
+                    break;
+                case 4:
+                    menuAnalytics.afficher();
+                    break;
+                case 0:
                     System.out.println("\n✓ Au revoir!");
                     continuer = false;
-                }
-                default -> System.out.println("✗ Choix invalide!");
+                    break;
+                default:
+                    System.out.println("✗ Choix invalide!");
+                    break;
             }
         }
         

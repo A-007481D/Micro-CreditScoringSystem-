@@ -14,17 +14,15 @@ import java.util.Optional;
 
 public class EmployeRepository {
     
-    private Connection getConnection() {
+    private Connection getConnection() throws SQLException {
         return DBConnection.getInstance().getConnection();
     }
 
     public Employe save(Employe employe) {
-        String sql = """
-            INSERT INTO employes (nom, prenom, date_naissance, ville, nombre_enfants, 
-                investissement, placement, situation_familiale, score, client_existant,
-                salaire, anciennete, poste, type_contrat, secteur)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """;
+        String sql = "INSERT INTO employes (nom, prenom, date_naissance, ville, nombre_enfants, " +
+                "investissement, placement, situation_familiale, score, client_existant, " +
+                "salaire, anciennete, poste, type_contrat, secteur) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         try (PreparedStatement stmt = getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, employe.getNom());
@@ -92,13 +90,10 @@ public class EmployeRepository {
     }
 
     public boolean update(Employe employe) {
-        String sql = """
-            UPDATE employes SET nom = ?, prenom = ?, date_naissance = ?, ville = ?,
-                nombre_enfants = ?, investissement = ?, placement = ?, situation_familiale = ?,
-                score = ?, client_existant = ?, salaire = ?, anciennete = ?, poste = ?,
-                type_contrat = ?, secteur = ?
-            WHERE id = ?
-        """;
+        String sql = "UPDATE employes SET nom = ?, prenom = ?, date_naissance = ?, ville = ?, " +
+                "nombre_enfants = ?, investissement = ?, placement = ?, situation_familiale = ?, " +
+                "score = ?, client_existant = ?, salaire = ?, anciennete = ?, poste = ?, " +
+                "type_contrat = ?, secteur = ? WHERE id = ?";
         
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setString(1, employe.getNom());

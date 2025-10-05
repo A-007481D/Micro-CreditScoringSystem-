@@ -1,0 +1,6 @@
+# Configuration de la base de données PostgreSQL
+# Copiez ce fichier en config.properties et modifiez les valeurs
+
+db.url=jdbc:postgresql://localhost:5432/microfin
+db.username=postgres
+db.password=postgres

@@ -11,16 +11,13 @@ import java.util.Optional;
 
 public class EcheanceRepository {
     
-    private Connection getConnection() {
+    private Connection getConnection() throws SQLException {
         return DBConnection.getInstance().getConnection();
     }
 
     public Echeance save(Echeance echeance) {
-        String sql = """
-            INSERT INTO echeances (credit_id, date_echeance, mensualite, date_paiement,
-                statut_paiement, numero_echeance)
-            VALUES (?, ?, ?, ?, ?, ?)
-        """;
+        String sql = "INSERT INTO echeances (credit_id, date_echeance, mensualite, date_paiement, " +
+                "statut_paiement, numero_echeance) VALUES (?, ?, ?, ?, ?, ?)";
         
         try (PreparedStatement stmt = getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setLong(1, echeance.getCreditId());
@@ -86,10 +83,7 @@ public class EcheanceRepository {
     }
 
     public boolean update(Echeance echeance) {
-        String sql = """
-            UPDATE echeances SET date_paiement = ?, statut_paiement = ?
-            WHERE id = ?
-        """;
+        String sql = "UPDATE echeances SET date_paiement = ?, statut_paiement = ? WHERE id = ?";
         
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             if (echeance.getDateDePaiement() != null) {

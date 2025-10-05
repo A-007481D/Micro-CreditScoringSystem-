@@ -11,6 +11,7 @@ import com.microfin.repository.IncidentRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class PaiementService {
     
@@ -60,13 +61,13 @@ public class PaiementService {
     public List<Echeance> listerEcheancesEnRetard(Long creditId) {
         return echeanceRepository.findByCreditId(creditId).stream()
             .filter(Echeance::estEnRetard)
-            .toList();
+            .collect(Collectors.toList());
     }
 
     public List<Echeance> listerEcheancesImpayees(Long creditId) {
         return echeanceRepository.findByCreditId(creditId).stream()
             .filter(Echeance::estImpaye)
-            .toList();
+            .collect(Collectors.toList());
     }
 
     public List<Incident> consulterHistoriqueIncidents(Long clientId) {

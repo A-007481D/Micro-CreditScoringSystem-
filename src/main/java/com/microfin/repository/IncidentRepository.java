@@ -11,15 +11,13 @@ import java.util.List;
 
 public class IncidentRepository {
     
-    private Connection getConnection() {
+    private Connection getConnection() throws SQLException {
         return DBConnection.getInstance().getConnection();
     }
 
     public Incident save(Incident incident) {
-        String sql = """
-            INSERT INTO incidents (date_incident, echeance_id, score, type_incident, client_id)
-            VALUES (?, ?, ?, ?, ?)
-        """;
+        String sql = "INSERT INTO incidents (date_incident, echeance_id, score, type_incident, client_id) " +
+                "VALUES (?, ?, ?, ?, ?)";
         
         try (PreparedStatement stmt = getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setDate(1, Date.valueOf(incident.getDateIncident()));

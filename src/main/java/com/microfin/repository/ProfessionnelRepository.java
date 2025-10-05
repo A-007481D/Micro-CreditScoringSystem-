@@ -12,17 +12,15 @@ import java.util.Optional;
 
 public class ProfessionnelRepository {
     
-    private Connection getConnection() {
+    private Connection getConnection() throws SQLException {
         return DBConnection.getInstance().getConnection();
     }
 
     public Professionnel save(Professionnel professionnel) {
-        String sql = """
-            INSERT INTO professionnels (nom, prenom, date_naissance, ville, nombre_enfants,
-                investissement, placement, situation_familiale, score, client_existant,
-                revenu, immatriculation_fiscale, secteur_activite, activite)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """;
+        String sql = "INSERT INTO professionnels (nom, prenom, date_naissance, ville, nombre_enfants, " +
+                "investissement, placement, situation_familiale, score, client_existant, " +
+                "revenu, immatriculation_fiscale, secteur_activite, activite) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         try (PreparedStatement stmt = getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, professionnel.getNom());
@@ -89,13 +87,10 @@ public class ProfessionnelRepository {
     }
 
     public boolean update(Professionnel professionnel) {
-        String sql = """
-            UPDATE professionnels SET nom = ?, prenom = ?, date_naissance = ?, ville = ?,
-                nombre_enfants = ?, investissement = ?, placement = ?, situation_familiale = ?,
-                score = ?, client_existant = ?, revenu = ?, immatriculation_fiscale = ?,
-                secteur_activite = ?, activite = ?
-            WHERE id = ?
-        """;
+        String sql = "UPDATE professionnels SET nom = ?, prenom = ?, date_naissance = ?, ville = ?, " +
+                "nombre_enfants = ?, investissement = ?, placement = ?, situation_familiale = ?, " +
+                "score = ?, client_existant = ?, revenu = ?, immatriculation_fiscale = ?, " +
+                "secteur_activite = ?, activite = ? WHERE id = ?";
         
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             stmt.setString(1, professionnel.getNom());

@@ -3,6 +3,8 @@
 ## Description
 Système de scoring automatisé pour le secteur micro-finance marocain permettant l'évaluation du risque crédit, la décision automatique et l'historisation complète des paiements.
 
+**Version Java 8 - Sans Maven - Pure Java**
+
 ## Fonctionnalités
 
 ### Module 1: Gestion des Clients
@@ -37,27 +39,59 @@ Système de scoring automatisé pour le secteur micro-finance marocain permettan
 - Sélection pour campagnes marketing
 
 ## Prérequis
-- Java 17+
-- PostgreSQL
-- Maven
+- **Java 8** (JDK 1.8)
+- **PostgreSQL** (9.5+)
+- Driver JDBC PostgreSQL (téléchargé automatiquement par le script de compilation)
 
 ## Installation
 
-1. Créer la base de données PostgreSQL:
+### 1. Créer la base de données PostgreSQL:
 ```sql
 CREATE DATABASE microfin;
 ```
 
-2. Configurer la connexion dans `DBConnection.java`
-
-3. Compiler le projet:
+### 2. Configurer la connexion à la base de données:
 ```bash
-mvn clean compile
+cp config.properties.template config.properties
+# Éditez config.properties avec vos paramètres de connexion
 ```
 
-4. Exécuter:
+### 3. Compiler le projet:
 ```bash
-mvn exec:java -Dexec.mainClass="com.microfin.Main"
+chmod +x compile.sh
+./compile.sh
+```
+
+Le script de compilation:
+- Télécharge automatiquement le driver PostgreSQL JDBC
+- Compile tous les fichiers Java avec Java 8
+- Crée un fichier JAR exécutable
+
+### 4. Exécuter l'application:
+```bash
+chmod +x run.sh
+./run.sh
+```
+
+Ou directement:
+```bash
+java -cp "out:lib/postgresql.jar" com.microfin.Main
+```
+
+### Compilation manuelle (sans scripts):
+```bash
+# Créer le répertoire de sortie
+mkdir -p out lib
+
+# Télécharger le driver PostgreSQL
+curl -L https://jdbc.postgresql.org/download/postgresql-42.2.27.jar -o lib/postgresql.jar
+
+# Compiler
+find src/main/java -name "*.java" > sources.txt
+javac -source 8 -target 8 -d out -cp "lib/postgresql.jar" @sources.txt
+
+# Exécuter
+java -cp "out:lib/postgresql.jar" com.microfin.Main
 ```
 
 ## Structure du Projet
