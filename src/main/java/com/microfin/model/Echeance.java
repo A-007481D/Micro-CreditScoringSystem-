@@ -30,38 +30,72 @@ public class Echeance {
         this.statutPaiement = determinerStatut();
     }
 
+    /**
+     * Détermine le statut actuel de l'échéance en fonction de la date du jour
+     * @return Le statut de paiement actuel
+     */
     public StatutPaiement determinerStatut() {
-        if (dateDePaiement == null) {
-            long joursRetard = ChronoUnit.DAYS.between(dateEcheance, LocalDate.now());
-            if (joursRetard >= 31) {
-                return StatutPaiement.IMPAYE_NON_REGLE;
+        // Si l'échéance a été payée
+        if (dateDePaiement != null) {
+            long joursRetard = ChronoUnit.DAYS.between(dateEcheance, dateDePaiement);
+            if (joursRetard <= 0) {
+                return StatutPaiement.PAYE_A_TEMPS;
+            } else if (joursRetard >= 31) {
+                return StatutPaiement.IMPAYE_REGLE;
             } else if (joursRetard >= 5) {
-                return StatutPaiement.EN_RETARD;
+                return StatutPaiement.PAYE_EN_RETARD;
+            } else {
+                return StatutPaiement.PAYE_A_TEMPS;
             }
-            return StatutPaiement.EN_RETARD;
         }
-
-        long joursRetard = ChronoUnit.DAYS.between(dateEcheance, dateDePaiement);
         
-        if (joursRetard <= 0) {
-            return StatutPaiement.PAYE_A_TEMPS;
-        } else if (joursRetard >= 31) {
-            return StatutPaiement.IMPAYE_REGLE;
+        // Si l'échéance n'a pas encore été payée
+        LocalDate aujourdhui = LocalDate.now();
+        
+        // Si la date d'échéance est dans le futur
+        if (aujourdhui.isBefore(dateEcheance.plusDays(1))) {
+            return StatutPaiement.A_PAYER;
+        }
+        
+        // Calculer le nombre de jours de retard
+        long joursRetard = ChronoUnit.DAYS.between(dateEcheance, aujourdhui);
+        
+        if (joursRetard >= 31) {
+            return StatutPaiement.IMPAYE_NON_REGLE;
         } else if (joursRetard >= 5) {
-            return StatutPaiement.PAYE_EN_RETARD;
+            return StatutPaiement.EN_RETARD;
         } else {
-            return StatutPaiement.PAYE_A_TEMPS;
+            // Moins de 5 jours de retard, toujours considéré comme à payer
+            return StatutPaiement.A_PAYER;
         }
     }
 
+    /**
+     * Vérifie si l'échéance est en retard
+     * @return true si l'échéance est en retard, false sinon
+     */
     public boolean estEnRetard() {
-        if (dateDePaiement != null) return false;
+        if (dateDePaiement != null) return false; // Déjà payée
         return LocalDate.now().isAfter(dateEcheance.plusDays(4));
     }
 
+    /**
+     * Vérifie si l'échéance est impayée (plus de 30 jours de retard)
+     * @return true si l'échéance est impayée, false sinon
+     */
     public boolean estImpaye() {
-        if (dateDePaiement != null) return false;
+        if (dateDePaiement != null) return false; // Déjà payée
         return LocalDate.now().isAfter(dateEcheance.plusDays(30));
+    }
+    
+    /**
+     * Vérifie si l'échéance est à payer (non échue ou moins de 5 jours de retard)
+     * @return true si l'échéance est à payer, false sinon
+     */
+    public boolean estAPayer() {
+        if (dateDePaiement != null) return false; // Déjà payée
+        LocalDate aujourdhui = LocalDate.now();
+        return !aujourdhui.isAfter(dateEcheance.plusDays(4));
     }
 
     public Long getId() {

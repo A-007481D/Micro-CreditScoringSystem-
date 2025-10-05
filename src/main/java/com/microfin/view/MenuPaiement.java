@@ -66,42 +66,168 @@ public class MenuPaiement {
     }
 
     private void enregistrerPaiement() {
-        FormatUtil.afficherTitre("Enregistrement Paiement");
+        FormatUtil.afficherTitre("ENREGISTREMENT PAIEMENT");
         
+        // Demander l'ID du crédit
         System.out.print("ID du crédit: ");
         Long creditId = lireLong();
         
-        List<Echeance> echeances = creditService.listerEcheances(creditId);
+        if (creditId <= 0) {
+            System.err.println("✗ ID de crédit invalide");
+            return;
+        }
         
-        System.out.println("\nÉchéances non payées:");
-        for (Echeance e : echeances) {
-            if (e.getDateDePaiement() == null) {
-                System.out.printf("ID: %d | N°%d | Date: %s | Montant: %s%n",
+        // Afficher les échéances non payées
+        List<Echeance> echeancesAPayer = paiementService.listerEcheancesAPayer(creditId);
+        List<Echeance> echeancesEnRetard = paiementService.listerEcheancesEnRetard(creditId);
+        
+        // Afficher d'abord les échéances à payer (non échues ou peu de retard)
+        System.out.println("\n=== ÉCHÉANCES À PAYER ===");
+        if (echeancesAPayer.isEmpty()) {
+            System.out.println("Aucune échéance à payer pour le moment.");
+        } else {
+            for (Echeance e : echeancesAPayer) {
+                System.out.printf("ID: %d | N°%d | Date: %s | Montant: %s | Statut: %s%n",
                     e.getId(),
                     e.getNumeroEcheance(),
                     DateUtil.formatDate(e.getDateEcheance()),
+                    FormatUtil.formatMoney(e.getMensualite()),
+                    e.determinerStatut().toString().replace("_", " ").toLowerCase());
+            }
+        }
+        
+        // Ensuite afficher les échéances en retard
+        System.out.println("\n=== ÉCHÉANCES EN RETARD ===");
+        if (echeancesEnRetard.isEmpty()) {
+            System.out.println("Aucune échéance en retard.");
+        } else {
+            for (Echeance e : echeancesEnRetard) {
+                long joursRetard = DateUtil.joursEntre(e.getDateEcheance(), LocalDate.now());
+                System.out.printf("ID: %d | N°%d | Date: %s | Jours de retard: %d | Montant: %s%n",
+                    e.getId(),
+                    e.getNumeroEcheance(),
+                    DateUtil.formatDate(e.getDateEcheance()),
+                    joursRetard,
                     FormatUtil.formatMoney(e.getMensualite()));
             }
         }
         
-        System.out.print("\nID de l'échéance: ");
+        // Demander l'ID de l'échéance à payer
+        System.out.print("\nID de l'échéance à payer (0 pour annuler): ");
         Long echeanceId = lireLong();
         
-        System.out.print("Date de paiement (jj/mm/aaaa) ou 'aujourd'hui': ");
-        String dateStr = scanner.nextLine();
-        LocalDate datePaiement = dateStr.equalsIgnoreCase("aujourd'hui") ? 
-            LocalDate.now() : DateUtil.parseDate(dateStr);
+        if (echeanceId <= 0) {
+            System.out.println("Opération annulée.");
+            return;
+        }
         
+        // Vérifier que l'échéance existe
+        boolean echeanceValide = false;
+        Echeance echeanceSelectionnee = null;
+        
+        // Vérifier dans les échéances à payer
+        for (Echeance e : echeancesAPayer) {
+            if (e.getId().equals(echeanceId)) {
+                echeanceValide = true;
+                echeanceSelectionnee = e;
+                break;
+            }
+        }
+        
+        // Si pas trouvée, vérifier dans les échéances en retard
+        if (!echeanceValide) {
+            for (Echeance e : echeancesEnRetard) {
+                if (e.getId().equals(echeanceId)) {
+                    echeanceValide = true;
+                    echeanceSelectionnee = e;
+                    break;
+                }
+            }
+        }
+        
+        if (!echeanceValide || echeanceSelectionnee == null) {
+            System.err.println("✗ Aucune échéance valide trouvée avec cet ID");
+            return;
+        }
+        
+        // Vérifier si l'échéance est déjà payée
+        if (echeanceSelectionnee.getDateDePaiement() != null) {
+            System.err.println("✗ Cette échéance a déjà été payée le " + 
+                DateUtil.formatDate(echeanceSelectionnee.getDateDePaiement()));
+            return;
+        }
+        
+        // Demander la date de paiement
+        LocalDate datePaiement = null;
+        while (datePaiement == null) {
+            System.out.print("Date de paiement (jj/mm/aaaa) ou 'aujourd'hui' pour " + LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ": ");
+            String dateStr = scanner.nextLine().trim();
+            
+            if (dateStr.equalsIgnoreCase("aujourd'hui") || dateStr.isEmpty()) {
+                datePaiement = LocalDate.now();
+            } else {
+                try {
+                    datePaiement = DateUtil.parseDate(dateStr);
+                    if (datePaiement.isAfter(LocalDate.now())) {
+                        System.err.println("✗ La date de paiement ne peut pas être dans le futur");
+                        datePaiement = null;
+                    }
+                } catch (Exception e) {
+                    System.err.println("✗ Format de date invalide. Utilisez le format jj/mm/aaaa");
+                }
+            }
+        }
+        
+        // Demander l'ID du client
         System.out.print("ID du client: ");
         Long clientId = lireLong();
         
-        System.out.print("Type client (EMPLOYE/PROFESSIONNEL): ");
-        String typeClient = scanner.nextLine();
+        if (clientId <= 0) {
+            System.err.println("✗ ID de client invalide");
+            return;
+        }
         
-        if (paiementService.enregistrerPaiement(echeanceId, datePaiement, clientId, typeClient)) {
-            System.out.println("✓ Paiement enregistré avec succès!");
+        // Demander le type de client
+        String typeClient = "";
+        while (!typeClient.equalsIgnoreCase("EMPLOYE") && !typeClient.equalsIgnoreCase("PROFESSIONNEL")) {
+            System.out.print("Type client (EMPLOYE/PROFESSIONNEL): ");
+            typeClient = scanner.nextLine().trim().toUpperCase();
+            
+            if (typeClient.isEmpty()) {
+                typeClient = "EMPLOYE"; // Valeur par défaut
+                break;
+            }
+        }
+        
+        // Enregistrer le paiement
+        System.out.println("\nRécapitulatif du paiement:");
+        System.out.println("Échéance N°" + echeanceSelectionnee.getNumeroEcheance());
+        System.out.println("Date d'échéance: " + DateUtil.formatDate(echeanceSelectionnee.getDateEcheance()));
+        System.out.println("Montant: " + FormatUtil.formatMoney(echeanceSelectionnee.getMensualite()));
+        System.out.println("Date de paiement: " + DateUtil.formatDate(datePaiement));
+        
+        System.out.print("\nConfirmer le paiement (O/N)? ");
+        String confirmation = scanner.nextLine().trim().toUpperCase();
+        
+        if (confirmation.equals("O") || confirmation.equals("OUI")) {
+            if (paiementService.enregistrerPaiement(echeanceId, datePaiement, clientId, typeClient)) {
+                System.out.println("\n✓ Paiement enregistré avec succès!");
+                
+                // Afficher le statut mis à jour
+                Echeance echeanceMiseAJour = creditService.listerEcheances(creditId).stream()
+                    .filter(e -> e.getId().equals(echeanceId))
+                    .findFirst()
+                    .orElse(null);
+                
+                if (echeanceMiseAJour != null) {
+                    System.out.println("Nouveau statut: " + 
+                        echeanceMiseAJour.getStatutPaiement().toString().replace("_", " ").toLowerCase());
+                }
+            } else {
+                System.err.println("\n✗ Erreur lors de l'enregistrement du paiement");
+            }
         } else {
-            System.out.println("✗ Erreur lors de l'enregistrement");
+            System.out.println("Paiement annulé.");
         }
     }
 
@@ -109,16 +235,49 @@ public class MenuPaiement {
         System.out.print("ID du crédit: ");
         Long creditId = lireLong();
         
+        if (creditId <= 0) {
+            System.err.println("✗ ID de crédit invalide");
+            return;
+        }
+        
         List<Echeance> retards = paiementService.listerEcheancesEnRetard(creditId);
         
-        FormatUtil.afficherTitre("Échéances en Retard (" + retards.size() + ")");
+        FormatUtil.afficherTitre("ÉCHÉANCES EN RETARD (" + retards.size() + ")");
+        
+        if (retards.isEmpty()) {
+            System.out.println("Aucune échéance en retard pour ce crédit.");
+            return;
+        }
+        
+        // Afficher un résumé
+        double totalDus = retards.stream()
+            .mapToDouble(Echeance::getMensualite)
+            .sum();
+            
+        System.out.printf("Total dû: %s%n%n", FormatUtil.formatMoney(totalDus));
+        
+        // Afficher le tableau des échéances
+        System.out.println("┌───────┬────────────┬───────────────┬────────────────┐");
+        System.out.println("│ N°    │ Date       │ Jours retard  │ Montant        │");
+        System.out.println("├───────┼────────────┼───────────────┼────────────────┤");
         
         for (Echeance e : retards) {
-            System.out.printf("N°%d | Date: %s | Montant: %s | Jours retard: %d%n",
+            long joursRetard = DateUtil.joursEntre(e.getDateEcheance(), LocalDate.now());
+            System.out.printf("│ %-5d │ %-10s │ %-13d │ %14s │%n",
                 e.getNumeroEcheance(),
                 DateUtil.formatDate(e.getDateEcheance()),
-                FormatUtil.formatMoney(e.getMensualite()),
-                DateUtil.joursEntre(e.getDateEcheance(), LocalDate.now()));
+                joursRetard,
+                FormatUtil.formatMoney(e.getMensualite()));
+        }
+        
+        System.out.println("└───────┴────────────┴───────────────┴────────────────┘");
+        
+        // Proposer de faire un paiement
+        System.out.print("\nSouhaitez-vous enregistrer un paiement (O/N)? ");
+        String reponse = scanner.nextLine().trim().toUpperCase();
+        
+        if (reponse.equals("O") || reponse.equals("OUI")) {
+            enregistrerPaiement();
         }
     }
 
@@ -126,16 +285,49 @@ public class MenuPaiement {
         System.out.print("ID du crédit: ");
         Long creditId = lireLong();
         
+        if (creditId <= 0) {
+            System.err.println("✗ ID de crédit invalide");
+            return;
+        }
+        
         List<Echeance> impayes = paiementService.listerEcheancesImpayees(creditId);
         
-        FormatUtil.afficherTitre("Échéances Impayées (" + impayes.size() + ")");
+        FormatUtil.afficherTitre("ÉCHÉANCES IMPAYÉES (" + impayes.size() + ")");
+        
+        if (impayes.isEmpty()) {
+            System.out.println("Aucune échéance impayée pour ce crédit.");
+            return;
+        }
+        
+        // Afficher un résumé
+        double totalDus = impayes.stream()
+            .mapToDouble(Echeance::getMensualite)
+            .sum();
+            
+        System.out.printf("Total impayé: %s%n%n", FormatUtil.formatMoney(totalDus));
+        
+        // Afficher le tableau des échéances
+        System.out.println("┌───────┬────────────┬───────────────┬────────────────┐");
+        System.out.println("│ N°    │ Date       │ Jours écoulés │ Montant        │");
+        System.out.println("├───────┼────────────┼───────────────┼────────────────┤");
         
         for (Echeance e : impayes) {
-            System.out.printf("N°%d | Date: %s | Montant: %s | Jours: %d%n",
+            long joursEcoules = DateUtil.joursEntre(e.getDateEcheance(), LocalDate.now());
+            System.out.printf("│ %-5d │ %-10s │ %-13d │ %14s │%n",
                 e.getNumeroEcheance(),
                 DateUtil.formatDate(e.getDateEcheance()),
-                FormatUtil.formatMoney(e.getMensualite()),
-                DateUtil.joursEntre(e.getDateEcheance(), LocalDate.now()));
+                joursEcoules,
+                FormatUtil.formatMoney(e.getMensualite()));
+        }
+        
+        System.out.println("└───────┴────────────┴───────────────┴────────────────┘");
+        
+        // Proposer de faire un paiement
+        System.out.print("\nSouhaitez-vous enregistrer un paiement (O/N)? ");
+        String reponse = scanner.nextLine().trim().toUpperCase();
+        
+        if (reponse.equals("O") || reponse.equals("OUI")) {
+            enregistrerPaiement();
         }
     }
 

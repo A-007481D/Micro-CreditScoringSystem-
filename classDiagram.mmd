@@ -1,0 +1,150 @@
+classDiagram
+    class Personne {
+        <<abstract>>
+        #Long id
+        #String nom
+        #String prenom
+        #LocalDate dateDeNaissance
+        #String ville
+        #int nombreEnfants
+        #double investissement
+        #double placement
+        #SituationFamiliale situationFamiliale
+        #LocalDate createdAt
+        #int score
+        #boolean clientExistant
+        +getAge() int
+        +getNomComplet() String
+        +getRevenuMensuel() double
+    }
+
+    class Employe {
+        -double salaire
+        -int anciennete
+        -String poste
+        -TypeContrat typeContrat
+        -Secteur secteur
+        +getAncienneteEnAnnees() int
+    }
+
+    class Professionnel {
+        -double revenu
+        -String immatriculationFiscale
+        -SecteurActivite secteurActivite
+        -String activite
+    }
+
+    class Credit {
+        -Long id
+        -Long clientId
+        -double montant
+        -int dureeMois
+        -double tauxInteret
+        -double mensualite
+        -DecisionCredit decision
+        -LocalDate dateDemande
+        -LocalDate dateTraitement
+        -String motifRefus
+        -double montantAccorde
+        -LocalDate dateDeCredit
+        -double montantRestant
+        +calculerMensualite() double
+    }
+
+    class Echeance {
+        -Long id
+        -Long creditId
+        -LocalDate dateEcheance
+        -double mensualite
+        -LocalDate dateDePaiement
+        -StatutPaiement statutPaiement
+        -int numeroEcheance
+        +determinerStatut() StatutPaiement
+        +estEnRetard() boolean
+        +estImpaye() boolean
+        +estAPayer() boolean
+    }
+
+    class Incident {
+        -Long id
+        -LocalDate dateIncident
+        -Long echeanceId
+        -int score
+        -TypeIncident typeIncident
+        -Long clientId
+    }
+
+%% Enums
+    class SituationFamiliale {
+        <<enumeration>>
+        CELIBATAIRE
+        MARIE
+        DIVORCE
+        VEUF
+    }
+
+    class TypeContrat {
+        <<enumeration>>
+        CDI
+        CDD
+        INTERIM
+        STAGE
+    }
+
+    class Secteur {
+        <<enumeration>>
+        PUBLIC
+        PRIVE
+        ASSOCIATIF
+    }
+
+    class SecteurActivite {
+        <<enumeration>>
+        COMMERCE
+        INDUSTRIE
+        SERVICES
+        AGRICULTURE
+        ARTISANAT
+    }
+
+    class DecisionCredit {
+        <<enumeration>>
+        ACCORDE
+        REFUSE
+        EN_ATTENTE
+        ETUDE_MANUELLE
+    }
+
+    class StatutPaiement {
+        <<enumeration>>
+        PAYE_A_TEMPS
+        PAYE_EN_RETARD
+        EN_RETARD
+        IMPAYE_NON_REGLE
+        IMPAYE_REGLE
+        A_PAYER
+    }
+
+    class TypeIncident {
+        <<enumeration>>
+        RETARD_PAIEMENT
+        INCIDENT_PAIEMENT
+        FRAUDE
+        AUTRE
+    }
+
+    Personne <|-- Employe
+    Personne <|-- Professionnel
+
+    Personne "1" -- "*" Credit
+    Credit "1" -- "*" Echeance
+    Echeance "1" -- "0..1" Incident
+    Personne "1" -- "*" Incident
+
+    Personne "1" -- "1" SituationFamiliale
+    Employe "1" -- "1" TypeContrat
+    Employe "1" -- "1" Secteur
+    Professionnel "1" -- "1" SecteurActivite
+    Credit "1" -- "1" DecisionCredit
+    Echeance "1" -- "1" StatutPaiement
+    Incident "1" -- "1" TypeIncident
