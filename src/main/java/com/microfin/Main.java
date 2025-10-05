@@ -7,7 +7,7 @@ public class Main {
     
     public static void main(String[] args) {
         System.out.println("╔════════════════════════════════════════════════════════════════╗");
-        System.out.println("║   SYSTÈME DE SCORING CRÉDIT - MICROFINANCE MAROC              ║");
+        System.out.println("║   SYSTÈME DE SCORING CRÉDIT - MICROFINANCE MAROC               ║");
         System.out.println("║   Version 1.0 (Java 8)                                         ║");
         System.out.println("╚════════════════════════════════════════════════════════════════╝");
         System.out.println();

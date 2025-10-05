@@ -102,10 +102,10 @@ public class DBConnection {
                 "existant BOOLEAN DEFAULT true" +
             ");",
             
-            // Employe table
-            "CREATE TABLE IF NOT EXISTS employe (" +
+            // Employes table
+            "CREATE TABLE IF NOT EXISTS employes (" +
                 "id SERIAL PRIMARY KEY, " +
-                "personne_id INT REFERENCES personne(id), " +
+                "personne_id INT REFERENCES personnes(id), " +
                 "salaire DOUBLE PRECISION NOT NULL, " +
                 "anciennete INT NOT NULL, " +
                 "poste VARCHAR(100), " +
@@ -113,18 +113,18 @@ public class DBConnection {
                 "secteur VARCHAR(50)" +
             ");",
             
-            // Professionnel table
-            "CREATE TABLE IF NOT EXISTS professionnel (" +
+            // Professionnels table
+            "CREATE TABLE IF NOT EXISTS professionnels (" +
                 "id SERIAL PRIMARY KEY, " +
-                "personne_id INT REFERENCES personne(id), " +
+                "personne_id INT REFERENCES personnes(id), " +
                 "revenu_annuel DOUBLE PRECISION NOT NULL, " +
                 "immatriculation_fiscale VARCHAR(100), " +
                 "secteur_activite VARCHAR(50), " +
                 "activite_specifique VARCHAR(200)" +
             ");",
             
-            // Credit table
-            "CREATE TABLE IF NOT EXISTS credit (" +
+            // Credits table
+            "CREATE TABLE IF NOT EXISTS credits (" +
                 "id SERIAL PRIMARY KEY, " +
                 "client_id INT NOT NULL, " +
                 "type_client VARCHAR(50) NOT NULL, " +
@@ -140,10 +140,10 @@ public class DBConnection {
                 "actif BOOLEAN DEFAULT true" +
             ");",
             
-            // Echeance table
-            "CREATE TABLE IF NOT EXISTS echeance (" +
+            // Echeances table
+            "CREATE TABLE IF NOT EXISTS echeances (" +
                 "id SERIAL PRIMARY KEY, " +
-                "credit_id INT REFERENCES credit(id), " +
+                "credit_id INT REFERENCES credits(id), " +
                 "numero_echeance INT NOT NULL, " +
                 "date_echeance DATE NOT NULL, " +
                 "date_paiement DATE, " +
@@ -152,11 +152,11 @@ public class DBConnection {
                 "jours_retard INT DEFAULT 0" +
             ");",
             
-            // Incident table
-            "CREATE TABLE IF NOT EXISTS incident (" +
+            // Incidents table
+            "CREATE TABLE IF NOT EXISTS incidents (" +
                 "id SERIAL PRIMARY KEY, " +
                 "date_incident DATE NOT NULL, " +
-                "echeance_id INT REFERENCES echeance(id), " +
+                "echeance_id INT REFERENCES echeances(id), " +
                 "client_id INT NOT NULL, " +
                 "type_incident VARCHAR(50) NOT NULL, " +
                 "score_impact INT NOT NULL, " +

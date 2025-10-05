@@ -13,6 +13,7 @@ public class MenuPrincipal {
     private final PaiementService paiementService;
     private final AnalyticsService analyticsService;
     
+    private final MenuClient menuClient;
     private final MenuCredit menuCredit;
     private final MenuPaiement menuPaiement;
     private final MenuAnalytics menuAnalytics;
@@ -24,6 +25,7 @@ public class MenuPrincipal {
         this.paiementService = new PaiementService();
         this.analyticsService = new AnalyticsService();
         
+        this.menuClient = new MenuClient(scanner, clientService);
         this.menuCredit = new MenuCredit(scanner, creditService, clientService);
         this.menuPaiement = new MenuPaiement(scanner, paiementService, creditService);
         this.menuAnalytics = new MenuAnalytics(scanner, analyticsService);
@@ -46,7 +48,7 @@ public class MenuPrincipal {
             
             switch (choix) {
                 case 1:
-                    System.out.println("Menu clients - À implémenter");
+                    menuClient.afficher();
                     break;
                 case 2:
                     menuCredit.afficher();
