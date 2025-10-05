@@ -1,7 +1,9 @@
 package com.microfin.view;
 
 import com.microfin.enums.TypeCredit;
+import com.microfin.enums.DecisionCredit;
 import com.microfin.model.Credit;
+import java.util.stream.Collectors;
 import com.microfin.model.Echeance;
 import com.microfin.model.Personne;
 import com.microfin.service.ClientService;
@@ -35,6 +37,7 @@ public class MenuCredit {
             System.out.println("3. Lister crédits d'un client");
             System.out.println("4. Voir échéances d'un crédit");
             System.out.println("5. Clôturer un crédit");
+            System.out.println("6. Traiter demande manuelle");
             System.out.println("0. Retour");
             FormatUtil.afficherSeparateur();
             System.out.print("Votre choix: ");
@@ -56,6 +59,9 @@ public class MenuCredit {
                     break;
                 case 5:
                     cloturerCredit();
+                    break;
+                case 6:
+                    traiterDemandeManuelle();
                     break;
                 case 0:
                     continuer = false;
@@ -178,6 +184,110 @@ public class MenuCredit {
         }
     }
 
+    private void traiterDemandeManuelle() {
+        FormatUtil.afficherTitre("Traitement des demandes manuelles");
+        
+        // List credits that need manual review
+        List<Credit> creditsEnAttente = creditService.listerCredits().stream()
+            .filter(c -> c.getDecision() == DecisionCredit.ETUDE_MANUELLE)
+            .collect(Collectors.toList());
+            
+        if (creditsEnAttente.isEmpty()) {
+            System.out.println("Aucun crédit n'est en attente d'étude manuelle.");
+            return;
+        }
+        
+        // Display pending credits
+        System.out.println("\nCRÉDITS EN ATTENTE D'ÉTUDE MANUELLE");
+        System.out.println("------------------------------------");
+        for (Credit credit : creditsEnAttente) {
+            System.out.printf("ID: %d | Client ID: %d | Montant: %s | Durée: %d mois | Type: %s%n",
+                credit.getId(),
+                credit.getClientId(),
+                FormatUtil.formatMoney(credit.getMontantDemande()),
+                credit.getDureeEnMois(),
+                credit.getTypeCredit()
+            );
+        }
+        
+        System.out.print("\nID du crédit à traiter (0 pour annuler): ");
+        Long creditId = lireLong();
+        
+        if (creditId == 0) {
+            return;
+        }
+        
+        // Find the selected credit
+        Optional<Credit> creditOpt = creditsEnAttente.stream()
+            .filter(c -> c.getId().equals(creditId))
+            .findFirst();
+            
+        if (creditOpt.isEmpty()) {
+            System.out.println("✗ ID de crédit invalide ou ne nécessitant pas d'étude manuelle");
+            return;
+        }
+        
+        Credit credit = creditOpt.get();
+        
+        // Show credit details
+        System.out.println("\nDÉTAILS DU CRÉDIT");
+        System.out.println("-----------------");
+        System.out.println("ID: " + credit.getId());
+        System.out.println("Client ID: " + credit.getClientId());
+        System.out.println("Montant demandé: " + FormatUtil.formatMoney(credit.getMontantDemande()));
+        System.out.println("Durée: " + credit.getDureeEnMois() + " mois");
+        System.out.println("Type: " + credit.getTypeCredit());
+        
+        // Ask for decision
+        System.out.println("\nQue souhaitez-vous faire ?");
+        System.out.println("1. Approuver le crédit");
+        System.out.println("2. Refuser le crédit");
+        System.out.println("0. Annuler");
+        System.out.print("Votre choix: ");
+        
+        int choix = lireEntier();
+        
+        switch (choix) {
+            case 1: // Approve
+                System.out.print("Montant approuvé (max " + FormatUtil.formatMoney(credit.getMontantDemande()) + "): ");
+                double montantApprouve = lireDouble();
+                
+                if (montantApprouve <= 0 || montantApprouve > credit.getMontantDemande()) {
+                    System.out.println("✗ Montant invalide");
+                    return;
+                }
+                
+                boolean success = creditService.traiterDemandeManuelle(
+                    creditId, 
+                    true, 
+                    montantApprouve
+                );
+                
+                if (success) {
+                    System.out.println("✓ Crédit approuvé avec succès! Les échéances ont été générées.");
+                } else {
+                    System.out.println("✗ Erreur lors de l'approbation du crédit");
+                }
+                break;
+                
+            case 2: // Reject
+                boolean rejected = creditService.traiterDemandeManuelle(creditId, false, 0);
+                if (rejected) {
+                    System.out.println("✓ Crédit refusé avec succès.");
+                } else {
+                    System.out.println("✗ Erreur lors du refus du crédit");
+                }
+                break;
+                
+            case 0: // Cancel
+                System.out.println("Opération annulée.");
+                break;
+                
+            default:
+                System.out.println("✗ Choix invalide!");
+        }
+    }
+    
     private void cloturerCredit() {
         System.out.print("ID du crédit: ");
         Long creditId = lireLong();

@@ -2,7 +2,9 @@ package com.microfin.enums;
 
 public enum DecisionCredit {
     ACCORD_IMMEDIAT("Accord immédiat"),
+    ACCORDE("Crédit accordé"),
     ETUDE_MANUELLE("Étude manuelle requise"),
+    REFUSE("Crédit refusé"),
     REFUS_AUTOMATIQUE("Refus automatique");
 
     private final String description;

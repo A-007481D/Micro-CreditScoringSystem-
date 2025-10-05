@@ -16,8 +16,8 @@ public class EcheanceRepository {
     }
 
     public Echeance save(Echeance echeance) {
-        String sql = "INSERT INTO echeances (credit_id, date_echeance, mensualite, date_paiement, " +
-                "statut_paiement, numero_echeance) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO echeances (credit_id, date_echeance, montant, date_paiement, " +
+                "statut, numero_echeance) VALUES (?, ?, ?, ?, ?, ?)";
         
         try (PreparedStatement stmt = getConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setLong(1, echeance.getCreditId());
@@ -83,7 +83,7 @@ public class EcheanceRepository {
     }
 
     public boolean update(Echeance echeance) {
-        String sql = "UPDATE echeances SET date_paiement = ?, statut_paiement = ? WHERE id = ?";
+        String sql = "UPDATE echeances SET date_paiement = ?, statut = ? WHERE id = ?";
         
         try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
             if (echeance.getDateDePaiement() != null) {
@@ -105,16 +105,16 @@ public class EcheanceRepository {
         Echeance echeance = new Echeance();
         echeance.setId(rs.getLong("id"));
         echeance.setCreditId(rs.getLong("credit_id"));
+        echeance.setNumeroEcheance(rs.getInt("numero_echeance"));
         echeance.setDateEcheance(rs.getDate("date_echeance").toLocalDate());
-        echeance.setMensualite(rs.getDouble("mensualite"));
+        echeance.setMensualite(rs.getDouble("montant"));
         
         Date datePaiement = rs.getDate("date_paiement");
         if (datePaiement != null) {
             echeance.setDateDePaiement(datePaiement.toLocalDate());
         }
         
-        echeance.setStatutPaiement(StatutPaiement.valueOf(rs.getString("statut_paiement")));
-        echeance.setNumeroEcheance(rs.getInt("numero_echeance"));
+        echeance.setStatutPaiement(StatutPaiement.valueOf(rs.getString("statut")));
         return echeance;
     }
 }
