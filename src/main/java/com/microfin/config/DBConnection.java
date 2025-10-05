@@ -131,17 +131,17 @@ public class DBConnection {
             "CREATE TABLE IF NOT EXISTS credits (" +
                 "id SERIAL PRIMARY KEY, " +
                 "client_id INT NOT NULL, " +
-                "type_client VARCHAR(50) NOT NULL, " +
-                "date_demande TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
-                "date_octroi TIMESTAMP, " +
+                "client_type VARCHAR(50) NOT NULL, " +
                 "montant_demande DOUBLE PRECISION NOT NULL, " +
                 "montant_octroye DOUBLE PRECISION, " +
                 "taux_interet DOUBLE PRECISION, " +
                 "duree_mois INT NOT NULL, " +
                 "type_credit VARCHAR(50) NOT NULL, " +
                 "decision VARCHAR(50), " +
-                "score_au_moment_du_credit INT, " +
-                "actif BOOLEAN DEFAULT true" +
+                "score_au_moment INT, " +
+                "actif BOOLEAN DEFAULT true, " +
+                "date_demande TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+                "date_octroi TIMESTAMP" +
             ");",
             
             // Echeances table
